@@ -5,19 +5,32 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'local.dart' show GITHUB_ACCESS_TOKEN;
 
 const String getMyRepositories = r'''
-  query ReadRepositories($nRepositories: Int!) {
-    viewer {
-      repositories(last: $nRepositories) {
-        nodes {
-          __typename
-          id
-          name
+  query ReadRepositories($nRepositories: Int!, $cursor: String) {
+    search(last: $nRepositories, query: "flutter", type: REPOSITORY, after: $cursor) {
+      nodes {
+        __typename
+        ... on Repository {
+          nameWithOwner
+          shortDescriptionHTML
           viewerHasStarred
+          stargazers {
+            totalCount
+          }
+          forks {
+            totalCount
+          }
+          updatedAt
         }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
     }
   }
-''';
+  ''';
 
 void main() => runApp(MyApp());
 
@@ -132,7 +145,7 @@ class MyHomePage extends StatelessWidget {
                                   color: Colors.amber,
                                 )
                               : const Icon(Icons.star_border),
-                          title: Text(repository['name'] as String),
+                          title: Text(repository['nameWithOwner'] as String),
                         ),
                       if (result.loading)
                         Row(
