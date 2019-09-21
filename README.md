@@ -2,7 +2,7 @@
 
 This a demo for an infinite scrolling list in Flutter. The Demo uses Github GraphQL API to search for Flutter repositories, loading 25 at a time.
 
-!["demo"]("demo.gif")
+!["demo"](demo.gif)
 
 ## Running this Demo
 
