@@ -1,36 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:infinite_scrolling_in_flutter/query.dart';
 
 // you need to create this file with Github Personal Token
 import 'local.dart' show GITHUB_ACCESS_TOKEN;
-
-const String getMyRepositories = r'''
-  query ReadRepositories($nRepositories: Int!, $cursor: String) {
-    search(last: $nRepositories, query: "flutter", type: REPOSITORY, after: $cursor) {
-      nodes {
-        __typename
-        ... on Repository {
-          nameWithOwner
-          shortDescriptionHTML
-          viewerHasStarred
-          stargazers {
-            totalCount
-          }
-          forks {
-            totalCount
-          }
-          updatedAt
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-    }
-  }
-  ''';
 
 void main() => runApp(MyApp());
 
@@ -117,6 +90,7 @@ class MyHomePage extends StatelessWidget {
 
                 final Map pageInfo = result.data['search']['pageInfo'];
                 final String fetchMoreCursor = pageInfo['endCursor'];
+
                 FetchMoreOptions opts = FetchMoreOptions(
                   variables: {'cursor': fetchMoreCursor},
                   updateQuery: (previousResultData, fetchMoreResultData) {
