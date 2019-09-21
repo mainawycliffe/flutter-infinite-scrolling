@@ -44,9 +44,11 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  final nRepositories = 10;
-
   final String title;
+
+  final nRepositories = 20;
+
+  ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -108,8 +110,19 @@ class MyHomePage extends StatelessWidget {
                   },
                 );
 
+                _scrollController
+                  ..addListener(() {
+                    if (_scrollController.position.pixels ==
+                        _scrollController.position.maxScrollExtent) {
+                      if (!result.loading) {
+                        fetchMore(opts);
+                      }
+                    }
+                  });
+
                 return Expanded(
                   child: ListView(
+                    controller: _scrollController,
                     children: <Widget>[
                       for (var repository in repositories)
                         ListTile(
@@ -128,17 +141,6 @@ class MyHomePage extends StatelessWidget {
                             CircularProgressIndicator(),
                           ],
                         ),
-                      RaisedButton(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text("Load More"),
-                          ],
-                        ),
-                        onPressed: () {
-                          fetchMore(opts);
-                        },
-                      )
                     ],
                   ),
                 );
